@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Notes - Multi-Language Vocabulary Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="save-indicator" id="saveIndicator">Saved!</div>
+        
+        <div class="local-storage-info">
+            ✅ <strong>Local Storage Enabled!</strong> Your vocabulary is automatically saved to your browser and will persist between sessions.
+        </div>
+        
+        <h1>🌍 Language Notes</h1>
+        
+        <!-- Language Selection Section -->
+        <div class="language-selection">
+            <h3>Languages:</h3>
+            <div class="language-tabs" id="languageTabs"></div>
+            <div class="add-language-section">
+                <input type="text" id="addLanguageInput" class="add-language-input" placeholder="Add language...">
+                <button id="addLanguageBtn" class="add-language-btn">+ Add</button>
+            </div>
+        </div>
+        
+        <!-- Statistics Section -->
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalWords">0</div>
+                <div class="stat-label">Total Words</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalCategories">0</div>
+                <div class="stat-label">Categories</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalLanguages">0</div>
+                <div class="stat-label">Languages</div>
+            </div>
+        </div>
+
+        <!-- Category Control Section -->
+        <div class="category-control">
+            <div class="category-toggle">
+                <span>Auto Category</span>
+                <div class="toggle-switch" id="categoryToggle">
+                    <div class="toggle-slider"></div>
+                </div>
+                <span>Manual Category</span>
+            </div>
+            
+            <div class="manual-mode" id="manualMode">
+                <div class="category-inputs">
+                    <div>
+                        <input type="text" id="newCategoryInput" placeholder="Create new category...">
+                        <select id="categorySelect">
+                            <option value="">Select existing category...</option>
+                        </select>
+                    </div>
+                    <button id="createCategoryBtn">Create</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Controls Section -->
+        <div class="controls">
+            <div class="add-word-section">
+                <h3>Add New Word</h3>
+                <input type="text" id="foreignInput" placeholder="Enter word in foreign language">
+                <input type="text" id="englishInput" placeholder="Enter English meaning">
+                <button id="addWordBtn">Add Word</button>
+            </div>
+            
+            <div class="search-section">
+                <h3>Search & Export</h3>
+                <input type="text" id="searchInput" placeholder="Search categories...">
+                
+                <div class="export-import">
+                    <button id="exportBtn">📥 Export Data</button>
+                    <button id="importBtn">📤 Import Data</button>
+                    <button id="clearBtn">🗑️ Clear All</button>
+                    <button id="storageInfoBtn">ℹ️ Storage Info</button>
+                </div>
+                <input type="file" id="importFile" accept=".json" style="display: none;">
+            </div>
+        </div>
+
+        <!-- Categories Display -->
+        <div id="categoriesContainer" class="categories-grid"></div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="languageData.js"></script>
+    <script src="categoryData.js"></script>
+    <script src="storage.js"></script>
+    <script src="ui.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
