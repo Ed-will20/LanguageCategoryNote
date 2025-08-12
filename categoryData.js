@@ -6,7 +6,7 @@ const categoryKeywords = {
         'water', 'tea', 'coffee', 'soup', 'noodle', 'cake', 'pizza', 'chicken', 'beef', 'pork',
         'apple', 'banana', 'orange', 'carrot', 'onion', 'tomato', 'potato', 'salt', 'sugar',
         'oil', 'butter', 'cheese', 'yogurt', 'juice', 'beer', 'wine', 'sake', 'miso', 'ramen',
-        'sushi', 'tempura', 'tofu', 'seaweed', 'plate'
+        'sushi', 'tempura', 'tofu', 'seaweed', 'plate', 'fork'
     ],
     
     animals: [
