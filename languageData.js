@@ -57,9 +57,9 @@ const sampleData = {
             { foreign: 'pan', english: 'bread' }
         ],
         colors: [
-            { foreign: 'aka', english: 'red' },
-            { foreign: 'ao', english: 'blue' },
-            { foreign: 'kiiro', english: 'yellow' }
+            { foreign: 'akai', english: 'red' },
+            { foreign: 'aoi', english: 'blue' },
+            { foreign: 'kiiroi', english: 'yellow' }
         ],
         family: [
             { foreign: 'okaasan', english: 'mother' },
