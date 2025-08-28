@@ -336,6 +336,161 @@ button:hover {
     align-items: center;
 }
 
+/* Add after the existing .category-title styles */
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.category-title {
+    margin: 0;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 8px;
+    flex: 1;
+}
+
+.category-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Replace move control styles with drag handle styles */
+.drag-handle {
+    cursor: grab;
+    color: #6c757d;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.drag-handle:hover {
+    color: #495057;
+    background: rgba(108, 117, 125, 0.1);
+    border-radius: 4px;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.dots {
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+
+.category-drag .dots {
+    font-size: 16px;
+}
+
+.word-drag {
+    margin-right: 10px;
+}
+
+/* Drag feedback styles */
+.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+}
+
+.drag-over {
+    background: rgba(102, 126, 234, 0.1);
+    border: 2px dashed #667eea;
+}
+
+.drag-over-top {
+    border-top: 3px solid #667eea;
+}
+
+.drag-over-bottom {
+    border-bottom: 3px solid #667eea;
+}
+
+/* Update word-item layout */
+.word-item {
+    background: #f8f9fa;
+    margin-bottom: 8px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+    animation: slideIn 0.5s ease-out;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.word-content {
+    flex: 1;
+}
+
+.delete-word {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    width: auto;
+}
+
+/* Update category header */
+.category-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Update word-item styles */
+.word-item {
+    background: #f8f9fa;
+    margin-bottom: 8px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+    animation: slideIn 0.5s ease-out;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.word-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .category-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .category-controls {
+        align-self: flex-end;
+    }
+    
+    .move-controls {
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .word-controls {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
 /* Word List */
 .word-list {
     list-style: none;

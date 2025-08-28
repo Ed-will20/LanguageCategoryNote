@@ -263,6 +263,70 @@ class LanguageNotesApp {
         }
     }
 
+        //moveWord to handle drag positioning better
+        moveWord(fromCategory, fromIndex, toCategory, toIndex) {
+            if (!this.vocabulary[this.currentLanguage] || 
+                !this.vocabulary[this.currentLanguage][fromCategory] ||
+                !this.vocabulary[this.currentLanguage][fromCategory][fromIndex]) {
+                return;
+            }
+            
+            // Remove word from original position
+            const word = this.vocabulary[this.currentLanguage][fromCategory].splice(fromIndex, 1)[0];
+            
+            // Adjust target index if moving within same category
+            if (fromCategory === toCategory && fromIndex < toIndex) {
+                toIndex = Math.max(0, toIndex - 1);
+            }
+            
+            // Ensure target category exists
+            if (!this.vocabulary[this.currentLanguage][toCategory]) {
+                this.vocabulary[this.currentLanguage][toCategory] = [];
+            }
+            
+            // Clamp target index to valid range
+            toIndex = Math.max(0, Math.min(toIndex, this.vocabulary[this.currentLanguage][toCategory].length));
+            
+            // Insert at new position
+            this.vocabulary[this.currentLanguage][toCategory].splice(toIndex, 0, word);
+            
+            // Clean up empty categories
+            if (this.vocabulary[this.currentLanguage][fromCategory].length === 0 && fromCategory !== toCategory) {
+                delete this.vocabulary[this.currentLanguage][fromCategory];
+                if (this.selectedCategory === fromCategory) {
+                    this.selectedCategory = '';
+                }
+            }
+            
+            this.saveData();
+            this.render();
+        }
+
+        moveCategory(sourceCategoryName, targetCategoryName) {
+            const categories = Object.keys(this.vocabulary[this.currentLanguage] || {});
+            const sourceIndex = categories.indexOf(sourceCategoryName);
+            const targetIndex = categories.indexOf(targetCategoryName);
+            
+            if (sourceIndex === -1 || targetIndex === -1 || sourceIndex === targetIndex) return;
+            
+            // Reorder categories
+            const newVocabulary = {};
+            const categoryToMove = categories[sourceIndex];
+            const categoriesWithoutMoved = categories.filter((_, i) => i !== sourceIndex);
+            
+            // Insert at target position
+            const adjustedTargetIndex = sourceIndex < targetIndex ? targetIndex - 1 : targetIndex;
+            categoriesWithoutMoved.splice(adjustedTargetIndex, 0, categoryToMove);
+            
+            categoriesWithoutMoved.forEach(cat => {
+                newVocabulary[cat] = this.vocabulary[this.currentLanguage][cat];
+            });
+            
+            this.vocabulary[this.currentLanguage] = newVocabulary;
+            this.saveData();
+            this.render();
+        }
+
     // Clear all data
     clearAllData() {
         if (!confirm('Are you sure you want to clear all vocabulary data? This cannot be undone!')) {
@@ -356,7 +420,9 @@ class LanguageNotesApp {
             this.vocabulary,
             this.currentLanguage,
             (category, index) => this.deleteWord(category, index),
-            (category) => this.deleteCategory(category)
+            (category) => this.deleteCategory(category),
+            (fromCategory, fromIndex, toCategory, toIndex) => this.moveWord(fromCategory, fromIndex, toCategory, toIndex),
+            (category, direction) => this.moveCategory(category, direction)
         );
         
         uiManager.updateCategorySelect(

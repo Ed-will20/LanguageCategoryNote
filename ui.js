@@ -92,7 +92,7 @@ class UIManager {
     }
 
     // Render categories grid
-    renderCategories(vocabulary, currentLanguage, onWordDelete, onCategoryDelete) {
+    renderCategories(vocabulary, currentLanguage, onWordDelete, onCategoryDelete, onWordMove, onCategoryMove) {
         const container = document.getElementById('categoriesContainer');
         if (!container || !currentLanguage) {
             if (container) {
@@ -110,7 +110,9 @@ class UIManager {
                 category, 
                 currentLanguageVocab[category], 
                 onWordDelete, 
-                onCategoryDelete
+                onCategoryDelete,
+                onWordMove,
+                onCategoryMove
             );
             container.appendChild(categoryCard);
         });
@@ -122,54 +124,162 @@ class UIManager {
     }
 
     // Create a single category card
-    createCategoryCard(category, words, onWordDelete, onCategoryDelete) {
-        const categoryCard = document.createElement('div');
-        categoryCard.className = 'category-card';
-        categoryCard.setAttribute('data-category', category);
-        
-        const categoryTitle = document.createElement('h3');
-        categoryTitle.className = 'category-title';
-        categoryTitle.innerHTML = `
-            <span>${getCategoryEmoji(category)} ${category}</span>
-            <button class="delete-category">Delete</button>
-        `;
-        
-        // Add delete category handler
-        const deleteBtn = categoryTitle.querySelector('.delete-category');
-        deleteBtn.addEventListener('click', () => onCategoryDelete(category));
-        
-        const wordList = document.createElement('ul');
-        wordList.className = 'word-list';
-        
-        words.forEach((word, index) => {
-            const wordItem = this.createWordItem(word, category, index, onWordDelete);
-            wordList.appendChild(wordItem);
-        });
-        
-        categoryCard.appendChild(categoryTitle);
-        categoryCard.appendChild(wordList);
-        
-        return categoryCard;
-    }
+        createCategoryCard(category, words, onWordDelete, onCategoryDelete, onWordMove, onCategoryMove) {
+            const categoryCard = document.createElement('div');
+            categoryCard.className = 'category-card';
+            categoryCard.setAttribute('data-category', category);
+            
+            const categoryHeader = document.createElement('div');
+            categoryHeader.className = 'category-header';
+            
+            const categoryTitle = document.createElement('h3');
+            categoryTitle.className = 'category-title';
+            categoryTitle.innerHTML = `<span>${getCategoryEmoji(category)} ${category}</span>`;
+            
+            const categoryControls = document.createElement('div');
+            categoryControls.className = 'category-controls';
+            categoryControls.innerHTML = `
+                <div class="drag-handle category-drag" draggable="true" title="Drag to reorder category">
+                    <span class="dots">⋮⋮</span>
+                </div>
+                <button class="delete-category">Delete</button>
+            `;
 
+            // Add delete button event handler
+            const deleteBtn = categoryControls.querySelector('.delete-category');
+            deleteBtn.addEventListener('click', () => onCategoryDelete(category));
+
+            // Add drag handlers for category
+            const dragHandle = categoryControls.querySelector('.category-drag');
+            dragHandle.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    type: 'category',
+                    category: category
+                }));
+                categoryCard.classList.add('dragging');
+            });
+
+            dragHandle.addEventListener('dragend', () => {
+                categoryCard.classList.remove('dragging');
+            });
+
+            // Add drop zone handlers to category card
+            categoryCard.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (!categoryCard.classList.contains('dragging')) {
+                    categoryCard.classList.add('drag-over');
+                }
+            });
+
+            categoryCard.addEventListener('dragleave', () => {
+                categoryCard.classList.remove('drag-over');
+            });
+
+            categoryCard.addEventListener('drop', (e) => {
+                e.preventDefault();
+                categoryCard.classList.remove('drag-over');
+                
+                const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
+                if (dragData.type === 'category' && dragData.category !== category) {
+                    onCategoryMove(dragData.category, category);
+                }
+            });
+            
+            // Assemble header
+            categoryHeader.appendChild(categoryTitle);
+            categoryHeader.appendChild(categoryControls);
+            
+            // Create word list
+            const wordList = document.createElement('ul');
+            wordList.className = 'word-list';
+            
+            words.forEach((word, index) => {
+                const wordItem = this.createWordItem(word, category, index, onWordDelete, onWordMove, words.length);
+                wordList.appendChild(wordItem);
+            });
+            
+            // Assemble card
+            categoryCard.appendChild(categoryHeader);
+            categoryCard.appendChild(wordList);
+            
+            return categoryCard;
+        }
     // Create a single word item
-    createWordItem(word, category, index, onWordDelete) {
-        const listItem = document.createElement('li');
-        listItem.className = 'word-item';
-        listItem.innerHTML = `
-            <div class="word-content">
-                <span class="foreign-word">${this.escapeHtml(word.foreign)}</span> - 
-                <span class="english-meaning">${this.escapeHtml(word.english)}</span>
-            </div>
-            <button class="delete-word">×</button>
-        `;
-        
-        // Add delete word handler
-        const deleteBtn = listItem.querySelector('.delete-word');
-        deleteBtn.addEventListener('click', () => onWordDelete(category, index));
-        
-        return listItem;
-    }
+    
+    // Create a single word item
+            createWordItem(word, category, index, onWordDelete, onWordMove, totalWords) {
+                const listItem = document.createElement('li');
+                listItem.className = 'word-item';
+                listItem.innerHTML = `
+                    <div class="drag-handle word-drag" draggable="true" title="Drag to reorder">
+                        <span class="dots">⋮⋮</span>
+                    </div>
+                    <div class="word-content">
+                        <span class="foreign-word">${this.escapeHtml(word.foreign)}</span> - 
+                        <span class="english-meaning">${this.escapeHtml(word.english)}</span>
+                    </div>
+                    <button class="delete-word">×</button>
+                `;
+                
+                // Add delete button event handler
+                const deleteBtn = listItem.querySelector('.delete-word');
+                deleteBtn.addEventListener('click', () => onWordDelete(category, index));
+
+                // Add drag handlers for word
+                const dragHandle = listItem.querySelector('.word-drag');
+                dragHandle.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', JSON.stringify({
+                        type: 'word',
+                        category: category,
+                        index: index
+                    }));
+                    listItem.classList.add('dragging');
+                });
+
+                dragHandle.addEventListener('dragend', () => {
+                    listItem.classList.remove('dragging');
+                });
+
+                // Add drop zone handlers to word item
+                listItem.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    if (!listItem.classList.contains('dragging')) {
+                        const rect = listItem.getBoundingClientRect();
+                        const midpoint = rect.top + rect.height / 2;
+                        if (e.clientY < midpoint) {
+                            listItem.classList.add('drag-over-top');
+                            listItem.classList.remove('drag-over-bottom');
+                        } else {
+                            listItem.classList.add('drag-over-bottom');
+                            listItem.classList.remove('drag-over-top');
+                        }
+                    }
+                });
+                
+                listItem.addEventListener('dragleave', () => {
+                    listItem.classList.remove('drag-over-top', 'drag-over-bottom');
+                });
+
+                listItem.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    listItem.classList.remove('drag-over-top', 'drag-over-bottom');
+                    
+                    const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
+                    if (dragData.type === 'word') {
+                        const rect = listItem.getBoundingClientRect();
+                        const midpoint = rect.top + rect.height / 2;
+                        let targetIndex = index;
+                        
+                        if (e.clientY > midpoint) {
+                            targetIndex = index + 1;
+                        }
+                        
+                        onWordMove(dragData.category, dragData.index, category, targetIndex);
+                    }
+                });
+                
+                return listItem;
+            }
 
     // Apply search filter to categories
     applySearchFilter(searchTerm) {
